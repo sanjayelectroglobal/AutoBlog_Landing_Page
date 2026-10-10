@@ -650,6 +650,22 @@ body {
   }
 }
 
+/* =========================================================================
+   NEXT.JS DEV INDICATOR BADGE SUPPRESSION
+   Hides the circular black Next.js badge from development viewport
+   ========================================================================= */
+nextjs-portal,
+#nextjs-dev-tools,
+[data-nextjs-toast],
+[data-nextjs-toast-wrapper],
+[data-next-badge] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+
 
 
 

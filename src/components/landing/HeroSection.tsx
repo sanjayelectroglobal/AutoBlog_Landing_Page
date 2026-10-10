@@ -320,7 +320,7 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
               gap: '20px',
             }}
             className="hero-interactive-3-cards"
@@ -434,6 +434,15 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
         @media (min-width: 900px) {
           .hero-interactive-3-cards {
             grid-template-columns: repeat(3, 1fr) !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .hero-interactive-3-cards {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+          .interactive-step-card {
+            padding: 16px 16px !important;
           }
         }
         .interactive-step-card:hover {
