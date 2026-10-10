@@ -342,8 +342,8 @@ export default function IntegrationsSpotlight({ onOpenLightbox }: IntegrationsSp
                     alignItems: 'center',
                     justifyContent: 'flex-start',
                     gap: '14px',
-                    width: '215px',
-                    height: '66px',
+                    width: '232px',
+                    height: '72px',
                     boxSizing: 'border-box',
                     backgroundColor: '#ffffff',
                     borderRadius: '16px',
@@ -356,17 +356,19 @@ export default function IntegrationsSpotlight({ onOpenLightbox }: IntegrationsSp
                     transition: 'transform 0.22s ease, box-shadow 0.22s ease',
                   }}
                 >
-                  {/* Branded Icon */}
+                  {/* Branded Icon Matching Upper Dashboard Image */}
                   <div
                     style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '10px',
+                      width: '46px',
+                      height: '46px',
+                      borderRadius: '50%',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
                       overflow: 'hidden',
+                      backgroundColor: '#f8fafc',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
                     }}
                   >
                     <img
@@ -375,7 +377,7 @@ export default function IntegrationsSpotlight({ onOpenLightbox }: IntegrationsSp
                       style={{
                         width: '100%',
                         height: '100%',
-                        objectFit: 'contain',
+                        objectFit: 'cover',
                         display: 'block',
                       }}
                     />
@@ -384,7 +386,7 @@ export default function IntegrationsSpotlight({ onOpenLightbox }: IntegrationsSp
                   {/* Platform Name */}
                   <span
                     style={{
-                      fontSize: '15.5px',
+                      fontSize: '16px',
                       fontWeight: 700,
                       color: 'var(--color-text-main)',
                       letterSpacing: '-0.01em',
