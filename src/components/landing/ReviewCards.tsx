@@ -102,7 +102,7 @@ const REVIEW_CARDS: ReviewCardItem[] = [
     clientRole: 'Co-founder',
     companyName: 'Poodles PetCare',
     companyCategory: 'D2C Pet E-Commerce',
-    photoSrc: '/images/review-lokesh.jpg',
+    photoSrc: '/images/review-lokesh.jpg?v=2',
     videoSrc: '/videos/Poodles.mp4',
     stars: 5,
     reviewText:
