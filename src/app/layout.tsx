@@ -22,6 +22,14 @@ export const metadata: Metadata = {
     'topical authority clusters',
   ],
   authors: [{ name: 'AutoBlog Engineering' }],
+  icons: {
+    icon: [
+      { url: '/favicon.png?v=2', type: 'image/png' },
+      { url: '/favicon.ico?v=2' },
+    ],
+    shortcut: '/favicon.png?v=2',
+    apple: '/favicon.png?v=2',
+  },
   robots: {
     index: true,
     follow: true,
@@ -59,7 +67,9 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Official AutoBlog Brand Favicon */}
-        <link rel="icon" href="/images/autoblog-official-logo.jpg" />
+        <link rel="icon" type="image/png" href="/favicon.png?v=2" />
+        <link rel="shortcut icon" href="/favicon.ico?v=2" />
+        <link rel="apple-touch-icon" href="/favicon.png?v=2" />
         {/* Modern Typography Fallbacks */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
