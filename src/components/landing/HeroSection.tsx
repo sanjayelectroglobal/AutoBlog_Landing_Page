@@ -48,20 +48,35 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
     }
   };
 
-  // Play video with sound on always
+  // Play video automatically with sound
   useEffect(() => {
     const vid = videoRef.current;
     if (!vid) return;
 
     vid.loop = true;
-    vid.muted = false;
-    vid.volume = 1.0;
 
-    // Immediately unmute upon any user interaction or scroll
+    // Attempt initial autoplay
+    vid.play().then(() => {
+      setIsPlaying(true);
+      // Try unmuting if browser allows
+      vid.muted = false;
+      vid.volume = 1.0;
+    }).catch(() => {
+      // If browser restricts unmuted autoplay, guarantee playback starts muted
+      vid.muted = true;
+      vid.play().then(() => {
+        setIsPlaying(true);
+      }).catch(() => {});
+    });
+
+    // Immediately unmute upon any user gesture or interaction anywhere on page
     const enableSound = () => {
       if (videoRef.current) {
         videoRef.current.muted = false;
         videoRef.current.volume = 1.0;
+        if (videoRef.current.paused) {
+          videoRef.current.play().catch(() => {});
+        }
       }
     };
 
@@ -72,22 +87,14 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
     window.addEventListener('scroll', enableSound, { passive: true });
     window.addEventListener('mousemove', enableSound, { passive: true });
 
-    // IntersectionObserver: automatically play when >= 50% visible, pause otherwise
+    // IntersectionObserver: automatically play when in view, pause only when scrolled away
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const isAtLeast50PercentVisible = entry.isIntersecting && entry.intersectionRatio >= 0.5;
-          isVisibleRef.current = isAtLeast50PercentVisible;
-
-          if (isAtLeast50PercentVisible) {
-            // Play with sound on always
-            vid.muted = false;
-            vid.volume = 1.0;
+          if (entry.isIntersecting) {
             vid.play().then(() => {
               setIsPlaying(true);
             }).catch(() => {
-              // If browser restricts unmuted autoplay without prior gesture,
-              // play muted temporarily until user touches or scrolls
               vid.muted = true;
               vid.play().then(() => {
                 setIsPlaying(true);
@@ -100,7 +107,7 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
         });
       },
       {
-        threshold: 0.5,
+        threshold: 0.1,
       }
     );
 
@@ -301,6 +308,7 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
               src="/videos/autoblog-demo.mp4"
               autoPlay
               loop
+              muted
               playsInline
               preload="auto"
               style={{
