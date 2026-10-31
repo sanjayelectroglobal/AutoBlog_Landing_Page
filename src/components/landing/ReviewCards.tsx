@@ -60,7 +60,7 @@ const REVIEW_CARDS: ReviewCardItem[] = [
     clientRole: 'Founder & CEO',
     companyName: 'RevDex',
     companyCategory: 'B2B Tech & Dev Agency',
-    photoSrc: '/images/review-ayush.jpg',
+    photoSrc: '/images/review-ayush.jpg?v=2',
     videoSrc: '/videos/RevDex.mp4',
     stars: 5,
     reviewText:
