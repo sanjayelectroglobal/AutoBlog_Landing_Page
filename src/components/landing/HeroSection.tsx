@@ -22,10 +22,6 @@ import {
   Search,
   Bot,
   Globe,
-  Volume2,
-  VolumeX,
-  Play,
-  Pause,
 } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -40,59 +36,41 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
   // Video player state & refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isMuted, setIsMuted] = useState<boolean>(false);
 
   // Visibility tracking ref
   const isVisibleRef = useRef<boolean>(false);
 
-  // Sound control: unmute anytime user interacts with the page or video
+  // Ensure audio is unmuted anytime the video is active
   const unmuteAudio = () => {
     if (videoRef.current) {
       videoRef.current.muted = false;
       videoRef.current.volume = 1.0;
-      setIsMuted(false);
-      if (isVisibleRef.current) {
-        videoRef.current.play().catch(() => {});
-      }
     }
   };
 
-  const toggleSound = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    if (!videoRef.current) return;
-    const nextMuted = !videoRef.current.muted;
-    videoRef.current.muted = nextMuted;
-    videoRef.current.volume = 1.0;
-    setIsMuted(nextMuted);
-    if (!nextMuted) {
-      videoRef.current.play().catch(() => {});
-      setIsPlaying(true);
-    }
-  };
-
-  // Play video with sound on anytime it is visible
+  // Play video with sound on always
   useEffect(() => {
     const vid = videoRef.current;
     if (!vid) return;
 
     vid.loop = true;
+    vid.muted = false;
     vid.volume = 1.0;
 
-    // Immediately unmute upon the first user interaction anywhere
-    const onFirstUserAction = () => {
-      unmuteAudio();
-      window.removeEventListener('click', onFirstUserAction);
-      window.removeEventListener('keydown', onFirstUserAction);
-      window.removeEventListener('touchstart', onFirstUserAction);
-      window.removeEventListener('pointerdown', onFirstUserAction);
-      window.removeEventListener('scroll', onFirstUserAction);
+    // Immediately unmute upon any user interaction or scroll
+    const enableSound = () => {
+      if (videoRef.current) {
+        videoRef.current.muted = false;
+        videoRef.current.volume = 1.0;
+      }
     };
 
-    window.addEventListener('click', onFirstUserAction, { once: true });
-    window.addEventListener('keydown', onFirstUserAction, { once: true });
-    window.addEventListener('touchstart', onFirstUserAction, { once: true });
-    window.addEventListener('pointerdown', onFirstUserAction, { once: true });
-    window.addEventListener('scroll', onFirstUserAction, { once: true, passive: true });
+    window.addEventListener('click', enableSound);
+    window.addEventListener('keydown', enableSound);
+    window.addEventListener('touchstart', enableSound);
+    window.addEventListener('pointerdown', enableSound);
+    window.addEventListener('scroll', enableSound, { passive: true });
+    window.addEventListener('mousemove', enableSound, { passive: true });
 
     // IntersectionObserver: automatically play when >= 50% visible, pause otherwise
     const observer = new IntersectionObserver(
@@ -102,17 +80,15 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
           isVisibleRef.current = isAtLeast50PercentVisible;
 
           if (isAtLeast50PercentVisible) {
-            // Attempt to play with sound on by default
+            // Play with sound on always
             vid.muted = false;
             vid.volume = 1.0;
             vid.play().then(() => {
               setIsPlaying(true);
-              setIsMuted(false);
             }).catch(() => {
-              // Browser autoplay policy restricted unmuted sound without user gesture;
-              // play muted as temporary fallback and await user gesture to instantly unmute
+              // If browser restricts unmuted autoplay without prior gesture,
+              // play muted temporarily until user touches or scrolls
               vid.muted = true;
-              setIsMuted(true);
               vid.play().then(() => {
                 setIsPlaying(true);
               }).catch(() => {});
@@ -132,11 +108,12 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
 
     return () => {
       observer.disconnect();
-      window.removeEventListener('click', onFirstUserAction);
-      window.removeEventListener('keydown', onFirstUserAction);
-      window.removeEventListener('touchstart', onFirstUserAction);
-      window.removeEventListener('pointerdown', onFirstUserAction);
-      window.removeEventListener('scroll', onFirstUserAction);
+      window.removeEventListener('click', enableSound);
+      window.removeEventListener('keydown', enableSound);
+      window.removeEventListener('touchstart', enableSound);
+      window.removeEventListener('pointerdown', enableSound);
+      window.removeEventListener('scroll', enableSound);
+      window.removeEventListener('mousemove', enableSound);
     };
   }, []);
 
@@ -188,7 +165,6 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
       }
       videoRef.current.muted = false;
       videoRef.current.volume = 1.0;
-      setIsMuted(false);
       videoRef.current.play().then(() => {
         setIsPlaying(true);
       }).catch(() => {});
@@ -309,11 +285,9 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
               cursor: 'pointer',
             }}
             onClick={() => {
-              // Clicking anywhere on video immediately unmutess and ensures sound is active
               if (videoRef.current) {
                 videoRef.current.muted = false;
                 videoRef.current.volume = 1.0;
-                setIsMuted(false);
                 if (videoRef.current.paused) {
                   videoRef.current.play().catch(() => {});
                   setIsPlaying(true);
@@ -321,11 +295,11 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
               }
             }}
           >
-            {/* Real HTML5 Video Element - Plays continuously with sound on */}
+            {/* Real HTML5 Video Element - Plays continuously with sound on and zero default poster image */}
             <video
               ref={videoRef}
               src="/videos/autoblog-demo.mp4"
-              poster="/images/sc-dashboard.png"
+              autoPlay
               loop
               playsInline
               preload="auto"
@@ -337,61 +311,6 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
                 display: 'block',
               }}
             />
-
-            {/* Floating Audio Status Pill Button */}
-            <div
-              style={{
-                position: 'absolute',
-                bottom: '16px',
-                right: '16px',
-                zIndex: 20,
-              }}
-            >
-              <button
-                type="button"
-                onClick={toggleSound}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '9px 16px',
-                  backgroundColor: isMuted ? 'rgba(15, 23, 42, 0.92)' : 'rgba(43, 68, 231, 0.94)',
-                  color: '#ffffff',
-                  border: isMuted ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid rgba(255, 255, 255, 0.45)',
-                  borderRadius: '999px',
-                  backdropFilter: 'blur(12px)',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  transition: 'all 0.2s ease',
-                  letterSpacing: '0.01em',
-                }}
-                title={isMuted ? 'Click to turn sound on' : 'Click to mute sound'}
-              >
-                {isMuted ? (
-                  <>
-                    <VolumeX size={16} color="#fca5a5" />
-                    <span>Click to Turn Sound ON</span>
-                  </>
-                ) : (
-                  <>
-                    <Volume2 size={16} color="#67e8f9" />
-                    <span>Sound is ON</span>
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        width: '7px',
-                        height: '7px',
-                        borderRadius: '50%',
-                        backgroundColor: '#10b981',
-                        boxShadow: '0 0 8px #10b981',
-                      }}
-                    />
-                  </>
-                )}
-              </button>
-            </div>
           </div>
         </div>
 

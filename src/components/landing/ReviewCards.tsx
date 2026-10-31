@@ -26,7 +26,7 @@
  *    - Soft edge fade gradients on left and right for elegant viewport entry and exit.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Star,
   Check,
@@ -35,8 +35,6 @@ import {
   Coins,
   Sparkles,
   Leaf,
-  Volume2,
-  VolumeX,
 } from 'lucide-react';
 
 interface ReviewCardItem {
@@ -116,8 +114,6 @@ const REVIEW_CARDS: ReviewCardItem[] = [
 const DUPLICATED_REVIEWS = [...REVIEW_CARDS, ...REVIEW_CARDS];
 
 export default function ReviewCards() {
-  const [unmutedCardId, setUnmutedCardId] = useState<string | null>(null);
-
   return (
     <section
       id="customer-reviews"
@@ -208,7 +204,6 @@ export default function ReviewCards() {
         <div className="review-cards-marquee-track">
           {DUPLICATED_REVIEWS.map((review, idx) => {
             const cardKey = `${review.id}-${idx}`;
-            const isUnmuted = unmutedCardId === cardKey;
 
             return (
               <div
@@ -216,12 +211,12 @@ export default function ReviewCards() {
                 className="review-video-card-item"
                 style={{ position: 'relative' }}
               >
-                {/* Autoplay Video Loop with Interactive Audio */}
+                {/* Looping Founder Video (Plays smoothly as video GIF) */}
                 <video
                   src={review.videoSrc}
                   autoPlay
                   loop
-                  muted={!isUnmuted}
+                  muted
                   playsInline
                   preload="auto"
                   style={{
@@ -233,48 +228,6 @@ export default function ReviewCards() {
                     display: 'block',
                   }}
                 />
-
-                {/* Founder Audio Toggle Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setUnmutedCardId(isUnmuted ? null : cardKey);
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    zIndex: 10,
-                    backgroundColor: isUnmuted ? 'rgba(16, 185, 129, 0.94)' : 'rgba(15, 23, 42, 0.8)',
-                    color: '#ffffff',
-                    border: '1px solid rgba(255, 255, 255, 0.35)',
-                    borderRadius: '999px',
-                    padding: '6px 14px',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    cursor: 'pointer',
-                    backdropFilter: 'blur(10px)',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                    transition: 'all 0.2s ease',
-                  }}
-                  title={isUnmuted ? 'Mute audio' : 'Listen to founder review with sound'}
-                >
-                  {isUnmuted ? (
-                    <>
-                      <Volume2 size={14} color="#ffffff" />
-                      <span>Sound ON</span>
-                    </>
-                  ) : (
-                    <>
-                      <VolumeX size={14} color="#fca5a5" />
-                      <span>Sound</span>
-                    </>
-                  )}
-                </button>
 
               {/* ────────────────────────────────────────────────────────────────
                   BOTTOM FLOATING HIGHLY TRANSPARENT GLASSMORPHIC REVIEW OVERLAY
