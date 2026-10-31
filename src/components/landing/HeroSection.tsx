@@ -22,6 +22,10 @@ import {
   Search,
   Bot,
   Globe,
+  Volume2,
+  VolumeX,
+  Play,
+  Pause,
 } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -36,35 +40,59 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
   // Video player state & refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
 
   // Visibility tracking ref
   const isVisibleRef = useRef<boolean>(false);
 
-  // Play only if minimum 50% visible on screen; pause automatically when scrolled away
+  // Sound control: unmute anytime user interacts with the page or video
+  const unmuteAudio = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.volume = 1.0;
+      setIsMuted(false);
+      if (isVisibleRef.current) {
+        videoRef.current.play().catch(() => {});
+      }
+    }
+  };
+
+  const toggleSound = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!videoRef.current) return;
+    const nextMuted = !videoRef.current.muted;
+    videoRef.current.muted = nextMuted;
+    videoRef.current.volume = 1.0;
+    setIsMuted(nextMuted);
+    if (!nextMuted) {
+      videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    }
+  };
+
+  // Play video with sound on anytime it is visible
   useEffect(() => {
     const vid = videoRef.current;
     if (!vid) return;
 
     vid.loop = true;
+    vid.volume = 1.0;
 
-    // Enable audio upon user interaction without triggering unwanted offscreen playback
-    const enableAudio = () => {
-      if (videoRef.current) {
-        videoRef.current.muted = false;
-        if (isVisibleRef.current) {
-          videoRef.current.play().catch(() => {});
-        }
-      }
-      window.removeEventListener('click', enableAudio);
-      window.removeEventListener('keydown', enableAudio);
-      window.removeEventListener('touchstart', enableAudio);
-      window.removeEventListener('pointerdown', enableAudio);
+    // Immediately unmute upon the first user interaction anywhere
+    const onFirstUserAction = () => {
+      unmuteAudio();
+      window.removeEventListener('click', onFirstUserAction);
+      window.removeEventListener('keydown', onFirstUserAction);
+      window.removeEventListener('touchstart', onFirstUserAction);
+      window.removeEventListener('pointerdown', onFirstUserAction);
+      window.removeEventListener('scroll', onFirstUserAction);
     };
 
-    window.addEventListener('click', enableAudio, { once: true });
-    window.addEventListener('keydown', enableAudio, { once: true });
-    window.addEventListener('touchstart', enableAudio, { once: true });
-    window.addEventListener('pointerdown', enableAudio, { once: true });
+    window.addEventListener('click', onFirstUserAction, { once: true });
+    window.addEventListener('keydown', onFirstUserAction, { once: true });
+    window.addEventListener('touchstart', onFirstUserAction, { once: true });
+    window.addEventListener('pointerdown', onFirstUserAction, { once: true });
+    window.addEventListener('scroll', onFirstUserAction, { once: true, passive: true });
 
     // IntersectionObserver: automatically play when >= 50% visible, pause otherwise
     const observer = new IntersectionObserver(
@@ -74,24 +102,29 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
           isVisibleRef.current = isAtLeast50PercentVisible;
 
           if (isAtLeast50PercentVisible) {
-            // Attempt to play (tries with sound first, falls back to muted if restricted by browser)
+            // Attempt to play with sound on by default
+            vid.muted = false;
+            vid.volume = 1.0;
             vid.play().then(() => {
               setIsPlaying(true);
+              setIsMuted(false);
             }).catch(() => {
+              // Browser autoplay policy restricted unmuted sound without user gesture;
+              // play muted as temporary fallback and await user gesture to instantly unmute
               vid.muted = true;
+              setIsMuted(true);
               vid.play().then(() => {
                 setIsPlaying(true);
               }).catch(() => {});
             });
           } else {
-            // Automatically pause when less than 50% visible (e.g., user scrolled downside)
             vid.pause();
             setIsPlaying(false);
           }
         });
       },
       {
-        threshold: 0.5, // Minimum 50% visible on screen required to play
+        threshold: 0.5,
       }
     );
 
@@ -99,10 +132,11 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
 
     return () => {
       observer.disconnect();
-      window.removeEventListener('click', enableAudio);
-      window.removeEventListener('keydown', enableAudio);
-      window.removeEventListener('touchstart', enableAudio);
-      window.removeEventListener('pointerdown', enableAudio);
+      window.removeEventListener('click', onFirstUserAction);
+      window.removeEventListener('keydown', onFirstUserAction);
+      window.removeEventListener('touchstart', onFirstUserAction);
+      window.removeEventListener('pointerdown', onFirstUserAction);
+      window.removeEventListener('scroll', onFirstUserAction);
     };
   }, []);
 
@@ -152,12 +186,12 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
       if (videoRef.current.duration && targetSeconds <= videoRef.current.duration) {
         videoRef.current.currentTime = targetSeconds;
       }
-      if (isVisibleRef.current) {
-        videoRef.current.muted = false;
-        videoRef.current.play().then(() => {
-          setIsPlaying(true);
-        }).catch(() => {});
-      }
+      videoRef.current.muted = false;
+      videoRef.current.volume = 1.0;
+      setIsMuted(false);
+      videoRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(() => {});
     }
   };
 
@@ -262,7 +296,7 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
           }}
           className="hero-video-fullwidth-stage"
         >
-          {/* Pure Video Canvas (Hover pauses, mouse leave resumes) */}
+          {/* Pure Video Canvas with Active Sound & Interactive Controls */}
           <div
             style={{
               position: 'relative',
@@ -274,20 +308,20 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
               boxShadow: '0 20px 50px -12px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(15, 23, 42, 0.08)',
               cursor: 'pointer',
             }}
-            onMouseEnter={() => {
+            onClick={() => {
+              // Clicking anywhere on video immediately unmutess and ensures sound is active
               if (videoRef.current) {
-                videoRef.current.pause();
-                setIsPlaying(false);
-              }
-            }}
-            onMouseLeave={() => {
-              if (videoRef.current && isVisibleRef.current) {
-                videoRef.current.play().catch(() => {});
-                setIsPlaying(true);
+                videoRef.current.muted = false;
+                videoRef.current.volume = 1.0;
+                setIsMuted(false);
+                if (videoRef.current.paused) {
+                  videoRef.current.play().catch(() => {});
+                  setIsPlaying(true);
+                }
               }
             }}
           >
-            {/* Real HTML5 Video Element - Controlled by 50% Visibility IntersectionObserver */}
+            {/* Real HTML5 Video Element - Plays continuously with sound on */}
             <video
               ref={videoRef}
               src="/videos/autoblog-demo.mp4"
@@ -303,6 +337,61 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
                 display: 'block',
               }}
             />
+
+            {/* Floating Audio Status Pill Button */}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '16px',
+                right: '16px',
+                zIndex: 20,
+              }}
+            >
+              <button
+                type="button"
+                onClick={toggleSound}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 16px',
+                  backgroundColor: isMuted ? 'rgba(15, 23, 42, 0.92)' : 'rgba(43, 68, 231, 0.94)',
+                  color: '#ffffff',
+                  border: isMuted ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid rgba(255, 255, 255, 0.45)',
+                  borderRadius: '999px',
+                  backdropFilter: 'blur(12px)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease',
+                  letterSpacing: '0.01em',
+                }}
+                title={isMuted ? 'Click to turn sound on' : 'Click to mute sound'}
+              >
+                {isMuted ? (
+                  <>
+                    <VolumeX size={16} color="#fca5a5" />
+                    <span>Click to Turn Sound ON</span>
+                  </>
+                ) : (
+                  <>
+                    <Volume2 size={16} color="#67e8f9" />
+                    <span>Sound is ON</span>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '7px',
+                        height: '7px',
+                        borderRadius: '50%',
+                        backgroundColor: '#10b981',
+                        boxShadow: '0 0 8px #10b981',
+                      }}
+                    />
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 

@@ -368,6 +368,15 @@ interface VideoModalProps {
 
 export function VideoModal({ isOpen, onClose }: VideoModalProps) {
   const [isPlaying, setIsPlaying] = useState(true);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+
+  React.useEffect(() => {
+    if (isOpen && videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.volume = 1.0;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -441,6 +450,7 @@ export function VideoModal({ isOpen, onClose }: VideoModalProps) {
           }}
         >
           <video
+            ref={videoRef}
             src="/videos/autoblog-demo.mp4"
             controls
             autoPlay
