@@ -48,79 +48,113 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
     }
   };
 
-  // Play video automatically with sound
+  // Play video automatically with sound & enforce strict 50% visibility pause/play
   useEffect(() => {
     const vid = videoRef.current;
     if (!vid) return;
 
     vid.loop = true;
 
-    // Attempt initial autoplay
-    vid.play().then(() => {
-      setIsPlaying(true);
-      // Try unmuting if browser allows
-      vid.muted = false;
-      vid.volume = 1.0;
-    }).catch(() => {
-      // If browser restricts unmuted autoplay, guarantee playback starts muted
-      vid.muted = true;
-      vid.play().then(() => {
-        setIsPlaying(true);
-      }).catch(() => {});
-    });
+    // Check exact 50% visibility based on bounding rect relative to viewport
+    const check50PercentVisibility = () => {
+      if (!videoRef.current) return;
+      const rect = videoRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    // Immediately unmute upon any user gesture or interaction anywhere on page
-    const enableSound = () => {
-      if (videoRef.current) {
-        videoRef.current.muted = false;
-        videoRef.current.volume = 1.0;
+      const visibleTop = Math.max(0, rect.top);
+      const visibleBottom = Math.min(windowHeight, rect.bottom);
+      const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+      const ratio = rect.height > 0 ? visibleHeight / rect.height : 0;
+
+      if (ratio >= 0.5) {
         if (videoRef.current.paused) {
           videoRef.current.play().catch(() => {});
+          setIsPlaying(true);
+        }
+      } else {
+        if (!videoRef.current.paused) {
+          videoRef.current.pause();
+          setIsPlaying(false);
         }
       }
     };
 
-    window.addEventListener('click', enableSound);
-    window.addEventListener('keydown', enableSound);
-    window.addEventListener('touchstart', enableSound);
-    window.addEventListener('pointerdown', enableSound);
-    window.addEventListener('scroll', enableSound, { passive: true });
-    window.addEventListener('mousemove', enableSound, { passive: true });
+    // Attempt autoplay with sound on initial load & refresh
+    const startAutoplay = () => {
+      vid.muted = false;
+      vid.volume = 1.0;
+      const playPromise = vid.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch(() => {
+            // If browser blocks unmuted sound on initial load, start playing muted
+            vid.muted = true;
+            vid.play().then(() => {
+              setIsPlaying(true);
+            }).catch(() => {});
+          });
+      }
+    };
 
-    // IntersectionObserver: automatically play when in view, pause only when scrolled away
+    startAutoplay();
+
+    // Turn sound ON immediately when user interacts anywhere on the page
+    // Note: Does NOT call play() so it never interferes with the 50% pause logic!
+    const unlockAudio = () => {
+      if (videoRef.current) {
+        videoRef.current.muted = false;
+        videoRef.current.volume = 1.0;
+      }
+    };
+
+    window.addEventListener('click', unlockAudio, { passive: true });
+    window.addEventListener('pointerdown', unlockAudio, { passive: true });
+    window.addEventListener('touchstart', unlockAudio, { passive: true });
+    window.addEventListener('keydown', unlockAudio, { passive: true });
+
+    // Handle 50% visibility pause/resume on scroll and window resize
+    window.addEventListener('scroll', check50PercentVisibility, { passive: true });
+    window.addEventListener('resize', check50PercentVisibility, { passive: true });
+
+    // Also use IntersectionObserver with 0.5 threshold as an additional native trigger
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            vid.play().then(() => {
+          const isAtLeast50 = entry.isIntersecting && entry.intersectionRatio >= 0.5;
+          if (isAtLeast50) {
+            if (vid.paused) {
+              vid.play().catch(() => {});
               setIsPlaying(true);
-            }).catch(() => {
-              vid.muted = true;
-              vid.play().then(() => {
-                setIsPlaying(true);
-              }).catch(() => {});
-            });
+            }
           } else {
-            vid.pause();
-            setIsPlaying(false);
+            if (!vid.paused) {
+              vid.pause();
+              setIsPlaying(false);
+            }
           }
         });
       },
       {
-        threshold: 0.1,
+        threshold: [0, 0.45, 0.5, 0.55, 1.0],
       }
     );
 
     observer.observe(vid);
 
+    // Initial check right after mount
+    check50PercentVisibility();
+
     return () => {
       observer.disconnect();
-      window.removeEventListener('click', enableSound);
-      window.removeEventListener('keydown', enableSound);
-      window.removeEventListener('touchstart', enableSound);
-      window.removeEventListener('pointerdown', enableSound);
-      window.removeEventListener('scroll', enableSound);
-      window.removeEventListener('mousemove', enableSound);
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('pointerdown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+      window.removeEventListener('scroll', check50PercentVisibility);
+      window.removeEventListener('resize', check50PercentVisibility);
     };
   }, []);
 
@@ -308,7 +342,6 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
               src="/videos/autoblog-demo.mp4"
               autoPlay
               loop
-              muted
               playsInline
               preload="auto"
               style={{
