@@ -68,7 +68,7 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
 
       if (ratio >= 0.5) {
         if (videoRef.current.paused) {
-          videoRef.current.play().catch(() => {});
+          videoRef.current.play().catch(() => { });
           setIsPlaying(true);
         }
       } else {
@@ -94,7 +94,7 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
             vid.muted = true;
             vid.play().then(() => {
               setIsPlaying(true);
-            }).catch(() => {});
+            }).catch(() => { });
           });
       }
     };
@@ -126,7 +126,7 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
           const isAtLeast50 = entry.isIntersecting && entry.intersectionRatio >= 0.5;
           if (isAtLeast50) {
             if (vid.paused) {
-              vid.play().catch(() => {});
+              vid.play().catch(() => { });
               setIsPlaying(true);
             }
           } else {
@@ -208,7 +208,7 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
       videoRef.current.volume = 1.0;
       videoRef.current.play().then(() => {
         setIsPlaying(true);
-      }).catch(() => {});
+      }).catch(() => { });
     }
   };
 
@@ -251,7 +251,7 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
       />
 
       <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
-        
+
         {/* =========================================================================
             PART 1: CLEAN, IMPACTFUL HEADLINE (TEXT & BUTTONS IN SS REMOVED)
             ========================================================================= */}
@@ -330,7 +330,7 @@ export default function HeroSection({ onOpenTrial, onPlayVideo }: HeroSectionPro
                 videoRef.current.muted = false;
                 videoRef.current.volume = 1.0;
                 if (videoRef.current.paused) {
-                  videoRef.current.play().catch(() => {});
+                  videoRef.current.play().catch(() => { });
                   setIsPlaying(true);
                 }
               }

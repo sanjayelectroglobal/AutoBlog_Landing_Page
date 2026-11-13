@@ -2,23 +2,23 @@
 
 /**
  * =====================================================================================
- * AUTOBLOG COMPACT PRICING CARDS COMPONENT
+ * AUTOBLOG INTERACTIVE PRICING CARDS COMPONENT
  * =====================================================================================
  * 
  * SPECIFICATIONS:
- * - Reduced vertical height to cleanly fit within standard laptop/desktop viewports.
- * - Faithful ChatGPT-style layout:
- *     [Plan Name + Optional RECOMMENDED Badge]
- *     [Headline Hook]
- *     [1-line Concise Description]
- *     [Full-Width Rounded Pill CTA Button]
- *     [Compact Price in INR + /mo (incl. GST)]
- *     [Divider]
- *     [5 Focused Feature Bullet Points with Custom Icons]
- * - Strictly 3 Paid Tiers (No Free Tier).
+ * - Single-line heading: "Predictable Plans for Autonomous Growth" (exact as before).
+ * - No monthly/yearly toggle (removed per user request).
+ * - Exact 3 Paid Tiers requested:
+ *     1. Starter:    $19 / mo  ->  5 SEO long-form articles / month
+ *     2. Pro:        $99 / mo  ->  30 SEO long-form articles / month (RECOMMENDED)
+ *     3. Enterprise: $149 / mo ->  60 SEO long-form articles / month
+ * - Full interactive cards:
+ *     - Interactive hover lift & elevation (transform: translateY(-8px))
+ *     - Interactive plan selection on click with glowing brand border
+ *     - Smooth shine CTA buttons connected to trial modal
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Sparkles,
   Bot,
@@ -53,12 +53,12 @@ const PRICING_PLANS: PricingPlan[] = [
     name: 'Starter',
     headline: 'Expanded access',
     description: 'Essential automated blog writing, keyword discovery & single-store sync.',
-    price: '₹1,499',
-    priceSub: '/ mo (incl. GST)',
+    price: '$19',
+    priceSub: '/ mo',
     buttonLabel: 'Upgrade to Starter',
     isRecommended: false,
     features: [
-      { text: '15 SEO long-form articles / month', icon: Bot },
+      { text: '5 SEO long-form articles / month', icon: Bot },
       { text: '1 connected store (Shopify or WordPress)', icon: Globe },
       { text: 'Buyer intent keyword opportunity scanner', icon: TrendingUp },
       { text: 'Automated featured images & meta tags', icon: Layers },
@@ -71,12 +71,12 @@ const PRICING_PLANS: PricingPlan[] = [
     badge: 'RECOMMENDED',
     headline: 'Your AI assistant',
     description: 'Autonomous daily publishing, semantic topical clusters & multi-CMS sync.',
-    price: '₹4,999',
-    priceSub: '/ mo (incl. GST)',
+    price: '$99',
+    priceSub: '/ mo',
     buttonLabel: 'Upgrade to Plus',
     isRecommended: true,
     features: [
-      { text: '60 SEO long-form articles / month', icon: Sparkles },
+      { text: '30 SEO long-form articles / month', icon: Sparkles },
       { text: 'Up to 3 connected stores & blogs', icon: Globe },
       { text: 'Semantic Topical Bubble cluster silos', icon: Boxes },
       { text: 'Universal CMS: WordPress, Shopify, Webflow', icon: Layers },
@@ -88,12 +88,12 @@ const PRICING_PLANS: PricingPlan[] = [
     name: 'Enterprise',
     headline: 'Maximum power',
     description: 'For high-velocity publishers and agencies requiring unlimited throughput.',
-    price: 'From ₹14,999',
-    priceSub: '/ mo (incl. GST)',
+    price: '$149',
+    priceSub: '/ mo',
     buttonLabel: 'Upgrade to Pro',
     isRecommended: false,
     features: [
-      { text: 'Unlimited SEO articles / month', icon: Bot },
+      { text: '60 SEO long-form articles / month', icon: Bot },
       { text: 'Unlimited connected domains & client stores', icon: Globe },
       { text: 'Custom headless CMS & REST API delivery', icon: Zap },
       { text: 'Multi-language global SEO translation', icon: Globe },
@@ -107,6 +107,9 @@ interface PricingCardsProps {
 }
 
 export default function PricingCards({ onOpenTrial }: PricingCardsProps) {
+  // Interactive plan selection state (default to recommended 'pro' plan)
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('pro');
+
   return (
     <section
       id="pricing"
@@ -121,50 +124,30 @@ export default function PricingCards({ onOpenTrial }: PricingCardsProps) {
       <div style={{ maxWidth: '1220px', margin: '0 auto', padding: '0 clamp(16px, 3vw, 28px)' }}>
         
         {/* ===================================================================
-            SECTION HEADER
+            SECTION HEADER (EXACT 1 SINGLE LINE AS BEFORE)
             =================================================================== */}
-        <div style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 32px' }}>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '4px 12px',
-              borderRadius: '9999px',
-              backgroundColor: 'rgba(37, 99, 235, 0.08)',
-              border: '1px solid rgba(37, 99, 235, 0.18)',
-              color: 'var(--color-brand-primary)',
-              fontSize: '11.5px',
-              fontWeight: 800,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              marginBottom: '8px',
-            }}
-          >
-            <Sparkles size={12} />
-            <span>Pricing Plans</span>
-          </div>
-
+        <div style={{ textAlign: 'center', margin: '0 auto clamp(32px, 4vw, 44px)' }}>
           <h2
             style={{
-              fontSize: 'clamp(24px, 2.8vw, 34px)',
+              fontSize: 'clamp(26px, 3vw, 36px)',
               fontWeight: 800,
               color: 'var(--color-text-main)',
               letterSpacing: '-0.03em',
               lineHeight: 1.2,
               margin: '0',
+              display: 'inline-block',
             }}
           >
             Predictable Plans for{' '}
             <span style={{ position: 'relative', display: 'inline-block' }}>
               <span style={{ color: 'var(--color-brand-primary)' }}>Autonomous Growth</span>
-              <span className="heading-underline-green" style={{ height: '3px', margin: '3px auto 0' }} />
+              <span className="heading-underline-green" style={{ height: '3px', margin: '4px auto 0' }} />
             </span>
           </h2>
         </div>
 
         {/* ===================================================================
-            BALANCED 3-CARD PRICING GRID
+            BALANCED 3-CARD PRICING GRID (INTERACTIVE SELECTION & HOVER)
             =================================================================== */}
         <div
           style={{
@@ -175,16 +158,25 @@ export default function PricingCards({ onOpenTrial }: PricingCardsProps) {
           }}
         >
           {PRICING_PLANS.map((plan) => {
+            const isSelected = selectedPlanId === plan.id;
             const isRec = plan.isRecommended;
 
             return (
               <div
                 key={plan.id}
+                onClick={() => setSelectedPlanId(plan.id)}
+                className="interactive-pricing-card"
                 style={{
                   backgroundColor: '#ffffff',
                   borderRadius: '22px',
-                  border: isRec ? '1.5px solid var(--color-brand-primary)' : '1px solid #e2e8f0',
-                  boxShadow: isRec
+                  border: isSelected
+                    ? '2px solid var(--color-brand-primary)'
+                    : isRec
+                    ? '1.5px solid var(--color-brand-primary)'
+                    : '1px solid #e2e8f0',
+                  boxShadow: isSelected
+                    ? '0 16px 38px -8px rgba(43, 68, 231, 0.22)'
+                    : isRec
                     ? '0 14px 36px -8px rgba(43, 68, 231, 0.16)'
                     : '0 4px 16px rgba(0, 0, 0, 0.03)',
                   padding: '32px 26px',
@@ -192,7 +184,9 @@ export default function PricingCards({ onOpenTrial }: PricingCardsProps) {
                   display: 'flex',
                   flexDirection: 'column',
                   position: 'relative',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                  cursor: 'pointer',
+                  transform: isSelected ? 'translateY(-6px)' : 'none',
+                  transition: 'all 0.22s ease',
                 }}
               >
                 {/* 1. Header Row: Name + Badge */}
@@ -264,7 +258,10 @@ export default function PricingCards({ onOpenTrial }: PricingCardsProps) {
                 {/* 4. Full-Width CTA Button */}
                 <button
                   type="button"
-                  onClick={onOpenTrial}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onOpenTrial) onOpenTrial();
+                  }}
                   style={{
                     width: '100%',
                     padding: '11px 20px',
@@ -279,17 +276,17 @@ export default function PricingCards({ onOpenTrial }: PricingCardsProps) {
                     border: 'none',
                     letterSpacing: '-0.01em',
                     transition: 'all 0.18s ease',
-                    backgroundColor: isRec ? 'var(--color-brand-primary)' : '#0f172a',
+                    backgroundColor: isSelected || isRec ? 'var(--color-brand-primary)' : '#0f172a',
                     color: '#ffffff',
-                    boxShadow: isRec
+                    boxShadow: isSelected || isRec
                       ? '0 4px 14px rgba(43, 68, 231, 0.3)'
                       : '0 2px 8px rgba(15, 23, 42, 0.12)',
                   }}
                   className="btn-shine"
                 >
-                  {isRec && <Sparkles size={14} />}
+                  {(isSelected || isRec) && <Sparkles size={14} />}
                   <span>{plan.buttonLabel}</span>
-                  {!isRec && <ArrowRight size={14} />}
+                  {!isSelected && !isRec && <ArrowRight size={14} />}
                 </button>
 
                 {/* 5. Price Display */}
@@ -306,7 +303,7 @@ export default function PricingCards({ onOpenTrial }: PricingCardsProps) {
                 >
                   <span
                     style={{
-                      fontSize: '30px',
+                      fontSize: '32px',
                       fontWeight: 800,
                       color: 'var(--color-text-main)',
                       letterSpacing: '-0.03em',
@@ -351,7 +348,7 @@ export default function PricingCards({ onOpenTrial }: PricingCardsProps) {
                           style={{
                             flexShrink: 0,
                             marginTop: '2px',
-                            color: isRec ? 'var(--color-brand-primary)' : '#64748b',
+                            color: isSelected || isRec ? 'var(--color-brand-primary)' : '#64748b',
                           }}
                         >
                           <IconComponent size={15} />
@@ -375,6 +372,14 @@ export default function PricingCards({ onOpenTrial }: PricingCardsProps) {
           })}
         </div>
       </div>
+
+      <style jsx>{`
+        .interactive-pricing-card:hover {
+          transform: translateY(-8px) !important;
+          box-shadow: 0 18px 40px -8px rgba(43, 68, 231, 0.22) !important;
+          border-color: var(--color-brand-primary) !important;
+        }
+      `}</style>
     </section>
   );
 }

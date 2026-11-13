@@ -65,22 +65,22 @@ export default function Footer() {
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <li>
-                <a href="#keyword-intelligence" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
+                <a href="/keyword-intelligence" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
                   AI Keyword Intelligence
                 </a>
               </li>
               <li>
-                <a href="#realtime-showcase" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
+                <a href="/real-time-showcase" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
                   Platform Showcase
                 </a>
               </li>
               <li>
-                <a href="#integrations-hub" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
+                <a href="/integration" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
                   CMS Integrations Ecosystem
                 </a>
               </li>
               <li>
-                <a href="#customer-reviews" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
+                <a href="/reviews" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
                   Customer Reviews
                 </a>
               </li>
@@ -94,22 +94,22 @@ export default function Footer() {
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <li>
-                <a href="#impact-stats" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
+                <a href="/impact-stats" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
                   Compounding Traffic Growth
                 </a>
               </li>
               <li>
-                <a href="#realtime-showcase" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
+                <a href="/real-time-showcase" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
                   Real-Time Analytics
                 </a>
               </li>
               <li>
-                <a href="#integrations-hub" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
+                <a href="/integration" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
                   1-Click Storefront Connectors
                 </a>
               </li>
               <li>
-                <a href="#contact-us" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
+                <a href="/contact-us" style={{ textDecoration: 'none', color: 'var(--color-text-body)', fontSize: '14px' }}>
                   Support &amp; Inquiries
                 </a>
               </li>
@@ -125,7 +125,7 @@ export default function Footer() {
               Get in touch with our blog automation team or request a personalized onboarding demo.
             </p>
             <a
-              href="#contact-us"
+              href="/contact-us"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',

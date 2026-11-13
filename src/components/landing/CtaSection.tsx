@@ -35,23 +35,45 @@ export default function CtaSection({ onOpenTrial }: CtaSectionProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [calendarUrl, setCalendarUrl] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     if (errorMessage) setErrorMessage('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim() || !formData.mobile.trim()) {
       setErrorMessage('Please fill in your name, email, and mobile number.');
       return;
     }
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setErrorMessage('');
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to submit inquiry. Please try again.');
+      }
+
+      if (data.calendarLink) {
+        setCalendarUrl(data.calendarLink);
+      }
       setIsSubmitted(true);
-    }, 600);
+    } catch (err: any) {
+      console.error('Contact submission error:', err);
+      setErrorMessage(err.message || 'Error submitting contact form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -171,9 +193,68 @@ export default function CtaSection({ onOpenTrial }: CtaSectionProps) {
                 <h3 style={{ fontSize: '24px', fontWeight: 800, margin: '0 0 10px 0', color: '#ffffff' }}>
                   Message Sent Successfully!
                 </h3>
-                <p style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.85)', margin: '0 0 24px 0', lineHeight: 1.6 }}>
-                  Thank you for reaching out, {formData.name}. Our team has received your details and will contact you via email ({formData.email}) or phone ({formData.mobile}) within 24 hours.
+                <p style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.9)', margin: '0 0 20px 0', lineHeight: 1.6 }}>
+                  Thank you for reaching out, <strong>{formData.name}</strong>. Your inquiry has been logged, and we have sent a confirmation email to <strong>{formData.email}</strong> from <code>sales@notify.mommantum.com</code>.
                 </p>
+
+                {/* Instant Google Calendar Booking Button */}
+                {calendarUrl && (
+                  <div style={{ marginBottom: '24px' }}>
+                    <a
+                      href={calendarUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-shine"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        padding: '13px 28px',
+                        borderRadius: '999px',
+                        backgroundColor: '#ffffff',
+                        color: 'var(--color-brand-primary)',
+                        fontSize: '14.5px',
+                        fontWeight: 800,
+                        textDecoration: 'none',
+                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+                        transition: 'transform 0.2s ease',
+                      }}
+                    >
+                      <span>📅 Book Strategy Meeting (10 AM - 6 PM IST)</span>
+                      <Sparkles size={15} color="var(--color-brand-primary)" />
+                    </a>
+                    <p style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.75)', marginTop: '8px' }}>
+                      Choose your preferred 20-min slot over the next 4 business days.
+                    </p>
+                  </div>
+                )}
+
+                {/* Direct Connect / Quick Issue Notes */}
+                <div
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    borderRadius: '10px',
+                    padding: '14px 18px',
+                    marginBottom: '20px',
+                    fontSize: '12.5px',
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    textAlign: 'left',
+                    lineHeight: 1.6,
+                  }}
+                >
+                  <p style={{ margin: '0 0 6px 0', fontWeight: 700, color: '#ffffff' }}>
+                    👥 Meeting Participants &amp; Direct Leadership Support:
+                  </p>
+                  <ul style={{ margin: '0 0 8px 0', paddingLeft: '18px', fontSize: '12px' }}>
+                    <li>Kuldeep Ahir: <code>ahirkuldeep1709@gmail.com</code> / <code>kuldeep@mommantum.com</code></li>
+                    <li>Saurabh Sharma: <code>sharnasaurabh2604@gmail.com</code></li>
+                  </ul>
+                  <p style={{ margin: 0, fontSize: '11.5px', color: 'rgba(255, 255, 255, 0.7)' }}>
+                    If you have any urgent issues or want to connect immediately, reply directly to the confirmation email.
+                  </p>
+                </div>
+
                 <button
                   type="button"
                   onClick={() => {
@@ -181,13 +262,13 @@ export default function CtaSection({ onOpenTrial }: CtaSectionProps) {
                     setFormData({ name: '', email: '', mobile: '', website: '', message: '' });
                   }}
                   style={{
-                    padding: '10px 24px',
+                    padding: '9px 22px',
                     borderRadius: '8px',
-                    backgroundColor: '#ffffff',
-                    color: 'var(--color-brand-primary)',
-                    fontSize: '13.5px',
-                    fontWeight: 700,
-                    border: 'none',
+                    backgroundColor: 'transparent',
+                    color: '#ffffff',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    fontSize: '13px',
+                    fontWeight: 600,
                     cursor: 'pointer',
                   }}
                 >

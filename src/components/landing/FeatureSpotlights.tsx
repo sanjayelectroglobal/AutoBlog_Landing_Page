@@ -346,7 +346,7 @@ export default function FeatureSpotlights({ onOpenLightbox }: FeatureSpotlightsP
             }}
           >
             <a
-              href="#contact-us"
+              href="/contact-us"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',

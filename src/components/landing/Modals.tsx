@@ -109,7 +109,7 @@ export function LightboxModal({ imageSrc, onClose }: LightboxModalProps) {
           </span>
           <div style={{ display: 'flex', gap: '10px' }}>
             <a
-              href="#contact-us"
+              href="/contact-us"
               onClick={onClose}
               style={{
                 padding: '8px 18px',
@@ -221,7 +221,7 @@ export function TrialModal({ isOpen, onClose }: TrialModalProps) {
             </p>
 
             <a
-              href="#contact-us"
+              href="/contact-us"
               onClick={onClose}
               style={{
                 display: 'inline-block',
@@ -493,7 +493,7 @@ export function VideoModal({ isOpen, onClose }: VideoModalProps) {
           </div>
 
           <a
-            href="#contact-us"
+            href="/contact-us"
             onClick={onClose}
             style={{
               fontSize: '12.5px',

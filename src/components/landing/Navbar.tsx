@@ -102,28 +102,28 @@ export default function Navbar({ onOpenTrial }: NavbarProps) {
               </a>
 
               <a
-                href="#realtime-showcase"
+                href="/real-time-showcase"
                 className="nav-item-link"
               >
                 Real-Time Showcase
               </a>
 
               <a
-                href="#integrations-hub"
+                href="/integration"
                 className="nav-item-link"
               >
                 Integration
               </a>
 
               <a
-                href="#customer-reviews"
+                href="/reviews"
                 className="nav-item-link"
               >
                 Reviews
               </a>
 
               <a
-                href="#pricing"
+                href="/pricing"
                 className="nav-item-link"
               >
                 Pricing
@@ -131,7 +131,7 @@ export default function Navbar({ onOpenTrial }: NavbarProps) {
 
               {/* Styled Pill Button matching "Let's Talk →" in reference design */}
               <a
-                href="#contact-us"
+                href="/contact-us"
                 className="nav-pill-cta"
                 title="Get in touch with AutoBlog"
               >
@@ -186,7 +186,7 @@ export default function Navbar({ onOpenTrial }: NavbarProps) {
           </a>
 
           <a
-            href="#realtime-showcase"
+            href="/real-time-showcase"
             onClick={() => setMobileMenuOpen(false)}
             style={{
               padding: '10px 0',
@@ -201,7 +201,7 @@ export default function Navbar({ onOpenTrial }: NavbarProps) {
           </a>
 
           <a
-            href="#integrations-hub"
+            href="/integration"
             onClick={() => setMobileMenuOpen(false)}
             style={{
               padding: '10px 0',
@@ -216,7 +216,7 @@ export default function Navbar({ onOpenTrial }: NavbarProps) {
           </a>
 
           <a
-            href="#customer-reviews"
+            href="/reviews"
             onClick={() => setMobileMenuOpen(false)}
             style={{
               padding: '10px 0',
@@ -231,7 +231,7 @@ export default function Navbar({ onOpenTrial }: NavbarProps) {
           </a>
 
           <a
-            href="#pricing"
+            href="/pricing"
             onClick={() => setMobileMenuOpen(false)}
             style={{
               padding: '10px 0',
@@ -246,7 +246,7 @@ export default function Navbar({ onOpenTrial }: NavbarProps) {
           </a>
 
           <a
-            href="#contact-us"
+            href="/contact-us"
             onClick={() => setMobileMenuOpen(false)}
             style={{
               display: 'inline-flex',
