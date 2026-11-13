@@ -34,9 +34,13 @@ async function sendMailflare(message: {
   text: string;
 }): Promise<string> {
   const baseUrl = (process.env.MAILFLARE_URL || 'https://mailx.rapidchip.in').replace(/\/+$/, '');
-  const mailboxId = process.env.MAILFLARE_MAILBOX_ID || 'mbx_nVJOTc9KtoLToxNZwlp0k';
-  const apiKey = process.env.MAILFLARE_API_KEY || 'ep_s-BuOZ4om-8CXQP7p1VYD';
+  const mailboxId = process.env.MAILFLARE_MAILBOX_ID || '';
+  const apiKey = process.env.MAILFLARE_API_KEY || '';
   const fromHeader = process.env.EMAIL_FROM || 'AutoBlog <sales@notify.mommantum.com>';
+
+  if (!apiKey || !mailboxId) {
+    throw new Error('Mailflare credentials (MAILFLARE_API_KEY / MAILFLARE_MAILBOX_ID) are missing from environment.');
+  }
 
   const makePayload = (includeCc: boolean) => {
     const payload: Record<string, any> = {

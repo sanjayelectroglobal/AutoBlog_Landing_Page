@@ -23,9 +23,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Local environment files
-.env*.local
-.env
+# Environment configuration files
+.env*
+.env.example
+*.env
 
 # Vercel & IDE
 .vercel
