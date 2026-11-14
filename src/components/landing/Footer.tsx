@@ -49,13 +49,9 @@ export default function Footer() {
               />
             </Link>
 
-            <p style={{ fontSize: '14px', lineHeight: 1.7, color: 'var(--color-text-body)', marginBottom: '16px' }}>
+            <p style={{ fontSize: '14px', lineHeight: 1.7, color: 'var(--color-text-body)', marginBottom: 0 }}>
               Autonomous AI Blog Automation &amp; Programmatic SEO Engine for modern e-commerce stores, D2C brands, and digital publishers.
             </p>
-
-            <div style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-              Built with Next.js 15, React 19, and Google Stitch MCP.
-            </div>
           </div>
 
           {/* Column 2: Platform Links */}
@@ -164,7 +160,20 @@ export default function Footer() {
           <div style={{ display: 'flex', gap: '20px' }}>
             <span>Privacy Policy</span>
             <span>Terms of Service</span>
-            <span>Security Architecture</span>
+            <a
+              href="https://www.mommantum.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: 'inherit',
+                textDecoration: 'none',
+                transition: 'color 0.2s ease',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-brand-primary)')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'inherit')}
+            >
+              Mommantum
+            </a>
           </div>
         </div>
       </div>
